@@ -1,27 +1,29 @@
 const Event = require('../models/eventModel');
 const validator = require('../utils/validators')
+const _ = require('lodash');
 const addEvent = async (req, res) => {
   try {
-    console.log(' resp', req.body)
+
     const { name, description, startDate, endDate, timezone } = req.body;
     const isDateValid = validator.validateDates(startDate, endDate);
-    console.log('is valide', isDateValid)
+
      if (!isDateValid) {
             return res.status(500).json({
                 message: 'la date de fin doit etre apres la date de debut!',
             });
         }
-        const event = new Event({
+        const newEvent = new Event({
         name,
         description,
         startDate,
         endDate,
         timezone
         });
-        await event.save();
+        await newEvent.save();
+        const event = await Event.findById(newEvent._id).select('name description startDate endDate timezone');
         return res.status(201).json({
         message: 'L\'événement a été ajouté avec succès!',
-        event
+        event: _.omit(event.toObject(), ['_id'])
     });
 
     } catch (err) {
