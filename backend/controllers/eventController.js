@@ -1,6 +1,6 @@
 const Event = require('../models/eventModel');
 const validator = require('../utils/validators')
-const _ = require('lodash');
+
 const addEvent = async (req, res) => {
   try {
 
@@ -20,10 +20,9 @@ const addEvent = async (req, res) => {
         timezone
         });
         await newEvent.save();
-        const event = await Event.findById(newEvent._id).select('name description startDate endDate timezone');
         return res.status(201).json({
         message: 'L\'événement a été ajouté avec succès!',
-        event: _.omit(event.toObject(), ['_id'])
+        newEvent
     });
 
     } catch (err) {
